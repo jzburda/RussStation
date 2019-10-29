@@ -2,8 +2,22 @@
 
 GLOBAL_VAR(restart_counter)
 
-//This happens after the Master subsystem new(s) (it's a global datum)
-//So subsystems globals exist, but are not initialised
+/**
+  * World creation
+  *
+  * Here is where a round itself is actually begun and setup, lots of important config changes happen here
+  * * db connection setup
+  * * config loaded from files
+  * * loads admins
+  * * Sets up the dynamic menu system
+  * * and most importantly, calls initialize on the master subsystem, starting the game loop that causes the rest of the game to begin processing and setting up
+  *
+  * Note this happens after the Master subsystem is created (as that is a global datum), this means all the subsystems exist,
+  * but they have not been Initialized at this point, only their New proc has run
+  * 
+  * Nothing happens until something moves. ~Albert Einstein 
+  * 
+  */
 /world/New()
 
 	log_world("World loaded at [time_stamp()]!")
@@ -35,7 +49,7 @@ GLOBAL_VAR(restart_counter)
 		world.log = file("[GLOB.log_directory]/dd.log") //not all runtimes trigger world/Error, so this is the only way to ensure we can see all of them.
 #endif
 
-	russ_initialize() // honk -- for loading added content on initialize
+	init_sprite_accessory_subtypes(/datum/sprite_accessory/diona_hair, GLOB.diona_hair_list, roundstart = TRUE)  // honk -- creates a list of diona hair options()
 	LoadVerbs(/datum/verbs/menu)
 	if(CONFIG_GET(flag/usewhitelist))
 		load_whitelist()
@@ -117,6 +131,7 @@ GLOBAL_VAR(restart_counter)
 	GLOB.query_debug_log = "[GLOB.log_directory]/query_debug.log"
 	GLOB.world_job_debug_log = "[GLOB.log_directory]/job_debug.log"
 	GLOB.world_paper_log = "[GLOB.log_directory]/paper.log"
+	GLOB.tgui_log = "[GLOB.log_directory]/tgui.log"
 
 #ifdef UNIT_TESTS
 	GLOB.test_log = file("[GLOB.log_directory]/tests.log")
@@ -131,6 +146,7 @@ GLOBAL_VAR(restart_counter)
 	start_log(GLOB.world_qdel_log)
 	start_log(GLOB.world_runtime_log)
 	start_log(GLOB.world_job_debug_log)
+	start_log(GLOB.tgui_log)
 
 	GLOB.changelog_hash = md5('html/changelog.html') //for telling if the changelog has changed recently
 	if(fexists(GLOB.config_error_log))
@@ -206,7 +222,7 @@ GLOBAL_VAR(restart_counter)
 		if (usr)
 			log_admin("[key_name(usr)] Has requested an immediate world restart via client side debugging tools")
 			message_admins("[key_name_admin(usr)] Has requested an immediate world restart via client side debugging tools")
-		to_chat(world, "<span class='boldannounce'>Rebooting World immediately due to host request</span>")
+		to_chat(world, "<span class='boldannounce'>Rebooting World immediately due to host request.</span>")
 	else
 		to_chat(world, "<span class='boldannounce'>Rebooting world...</span>")
 		Master.Shutdown()	//run SS shutdowns

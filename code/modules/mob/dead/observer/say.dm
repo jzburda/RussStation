@@ -1,9 +1,9 @@
-/mob/dead/observer/say(message, bubble_type, var/list/spans = list(), sanitize = TRUE, datum/language/language = null, ignore_spam = FALSE, forced = null)
+/mob/dead/observer/say(message, bubble_type, list/spans = list(), sanitize = TRUE, datum/language/language = null, ignore_spam = FALSE, forced = null)
 	message = trim(copytext(sanitize(message), 1, MAX_MESSAGE_LEN))
 	if (!message)
 		return
 
-	var/message_mode = get_message_mode(message)
+	var/message_mode = get_message_mode(emoji_parse(message)) //honk - testing a fix for emoji parsing issues. submit to /tg/ after some playtesting
 	if(client && (message_mode == MODE_ADMIN || message_mode == MODE_DEADMIN))
 		message = copytext(message, 3)
 		if(findtext(message, " ", 1, 2))

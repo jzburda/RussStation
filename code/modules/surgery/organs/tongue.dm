@@ -16,10 +16,9 @@
 		/datum/language/monkey,
 		/datum/language/narsie,
 		/datum/language/beachbum,
-		/datum/language/ratvar,
 		/datum/language/aphasia,
 		/datum/language/piratespeak,
-		/datum/language/dwarvish, //honk
+		/datum/language/dwarvish //honk
 	))
 
 /obj/item/organ/tongue/Initialize(mapload)
@@ -167,7 +166,6 @@
 		/datum/language/xenocommon,
 		/datum/language/common,
 		/datum/language/draconic,
-		/datum/language/ratvar,
 		/datum/language/monkey))
 
 /obj/item/organ/tongue/alien/Initialize(mapload)
@@ -175,7 +173,7 @@
 	languages_possible = languages_possible_alien
 
 /obj/item/organ/tongue/alien/handle_speech(datum/source, list/speech_args)
-	playsound(owner, "hiss", 25, 1, 1)
+	playsound(owner, "hiss", 25, TRUE, TRUE)
 
 /obj/item/organ/tongue/bone
 	name = "bone \"tongue\""
